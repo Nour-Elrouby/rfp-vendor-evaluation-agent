@@ -27,12 +27,6 @@ reasoning, ranks vendors, and maintains a local audit trail.
   <img src="docs/images/dashboard-workspace.png" alt="ProcureLens proposal evaluation workspace" width="100%">
 </p>
 
-### Responsive mobile experience
-
-<p align="center">
-  <img src="docs/images/dashboard-mobile.png" alt="ProcureLens responsive mobile dashboard" width="360">
-</p>
-
 ## Features
 
 - Extracts proposal text from PDF, DOCX, and XLSX files
