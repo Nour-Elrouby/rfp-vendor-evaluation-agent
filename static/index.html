@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ProcureLens AI-assisted RFP vendor evaluation dashboard">
+  <title>ProcureLens | Vendor Intelligence</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="#overview" aria-label="ProcureLens home">
+        <span class="brand-mark" aria-hidden="true"><span>P</span></span>
+        <span><strong>ProcureLens</strong><small>Vendor Intelligence</small></span>
+      </a>
+
+      <nav class="nav-list">
+        <a class="nav-link active" href="#overview" data-section="overview">
+          <span class="nav-icon">01</span><span>Overview</span>
+        </a>
+        <a class="nav-link" href="#evaluate" data-section="evaluate">
+          <span class="nav-icon">02</span><span>Evaluate</span>
+        </a>
+        <a class="nav-link" href="#rankings" data-section="rankings">
+          <span class="nav-icon">03</span><span>Rankings</span>
+        </a>
+        <a class="nav-link" href="#audit" data-section="audit">
+          <span class="nav-icon">04</span><span>Audit trail</span>
+        </a>
+        <a class="nav-link" href="#assistant" data-section="assistant">
+          <span class="nav-icon">05</span><span>RFP assistant</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="service-status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span><strong>Groq powered</strong><small>Secure server connection</small></span>
+        </div>
+        <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">API documentation <span>↗</span></a>
+      </div>
+    </aside>
+
+    <main id="main-content" class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Procurement workspace</p>
+          <h1>Vendor intelligence dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="privacy-pill"><span aria-hidden="true">●</span> Local audit storage</span>
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch color theme" title="Switch color theme">
+            <span class="theme-icon" aria-hidden="true">◐</span>
+          </button>
+        </div>
+      </header>
+
+      <section id="overview" class="section hero-section" aria-labelledby="overview-title">
+        <div class="hero-copy">
+          <p class="section-kicker">Evidence-led procurement</p>
+          <h2 id="overview-title">Turn complex proposals into <span>clear decisions.</span></h2>
+          <p>Evaluate vendor submissions against your exact RFP requirements, verify the reasoning, and keep every decision auditable.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#evaluate">Evaluate a proposal <span aria-hidden="true">→</span></a>
+            <a class="button ghost" href="#audit">Review audit trail</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Evaluation workflow preview">
+          <div class="signal-card signal-main">
+            <span class="signal-label">Decision signal</span>
+            <div class="score-preview"><strong id="hero-score">—</strong><span>/100</span></div>
+            <div class="progress-track"><span id="hero-progress"></span></div>
+            <div class="signal-row"><span>Evidence consistency</span><strong id="hero-consistency">Awaiting evaluation</strong></div>
+          </div>
+          <div class="signal-card signal-float top"><span class="mini-icon">✓</span><span><small>Compliance</small><strong>Verified</strong></span></div>
+          <div class="signal-card signal-float bottom"><span class="mini-icon">#</span><span><small>Audit record</small><strong>Traceable</strong></span></div>
+        </div>
+      </section>
+
+      <section class="metrics-grid" aria-label="Evaluation summary">
+        <article class="metric-card">
+          <span class="metric-label">Total evaluations</span>
+          <strong id="metric-total">0</strong>
+          <small>Recorded assessments</small>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Average score</span>
+          <strong id="metric-average">—</strong>
+          <small>Across evaluated vendors</small>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Verified reasoning</span>
+          <strong id="metric-verified">0</strong>
+          <small>Consistency checks passed</small>
+        </article>
+        <article class="metric-card accent-card">
+          <span class="metric-label">Supported formats</span>
+          <strong>3</strong>
+          <small>PDF · DOCX · XLSX</small>
+        </article>
+      </section>
+
+      <section id="evaluate" class="section" aria-labelledby="evaluate-title">
+        <div class="section-heading">
+          <div><p class="section-kicker">New assessment</p><h2 id="evaluate-title">Evaluate a vendor proposal</h2></div>
+          <p>Upload a submission and define the requirements that matter to your decision.</p>
+        </div>
+
+        <div class="evaluate-grid">
+          <form id="evaluation-form" class="panel form-panel">
+            <div class="field-group">
+              <div class="field-heading"><label for="proposal-file">Proposal document</label><span>Required</span></div>
+              <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-controls="proposal-file">
+                <input id="proposal-file" name="file" type="file" accept=".pdf,.docx,.xlsx" hidden required>
+                <div class="upload-icon" aria-hidden="true">↑</div>
+                <div id="drop-copy">
+                  <strong>Drop a proposal here</strong>
+                  <p>or <span>browse files</span> from your computer</p>
+                  <small>PDF, DOCX, or XLSX</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <div class="field-heading">
+                <label for="rfp-criteria">RFP evaluation criteria</label>
+                <button id="sample-criteria" class="text-button" type="button">Use sample</button>
+              </div>
+              <textarea id="rfp-criteria" name="rfp_criteria" rows="8" required placeholder="Define mandatory requirements, commercial limits, delivery timelines, certifications, SLAs, and other evaluation criteria..."></textarea>
+              <div class="field-meta"><span>Be specific for stronger evidence-based scoring.</span><span id="criteria-count">0 characters</span></div>
+            </div>
+
+            <button id="evaluate-button" class="button primary submit-button" type="submit">
+              <span class="button-label">Run evaluation</span><span aria-hidden="true">→</span>
+            </button>
+          </form>
+
+          <div class="panel result-panel" aria-live="polite">
+            <div id="result-empty" class="empty-state">
+              <div class="empty-orbit" aria-hidden="true"><span></span></div>
+              <h3>Decision intelligence appears here</h3>
+              <p>Complete the evaluation form to receive a score, supporting reasoning, and an independent consistency check.</p>
+              <div class="process-list">
+                <span><i>1</i> Extract proposal evidence</span>
+                <span><i>2</i> Score against requirements</span>
+                <span><i>3</i> Verify generated reasoning</span>
+              </div>
+            </div>
+
+            <div id="result-loading" class="loading-state" hidden>
+              <div class="loader" aria-hidden="true"></div>
+              <h3>Evaluating proposal</h3>
+              <p id="loading-message">Extracting document evidence...</p>
+              <div class="loading-steps"><span class="active"></span><span></span><span></span></div>
+            </div>
+
+            <div id="result-content" class="result-content" hidden>
+              <div class="result-header">
+                <div><p class="section-kicker">Evaluation complete</p><h3 id="result-vendor">Vendor proposal</h3></div>
+                <span id="result-status" class="status-badge">Verified</span>
+              </div>
+              <div class="result-score-row">
+                <div class="score-ring" id="score-ring"><span><strong id="result-score">0</strong><small>/100</small></span></div>
+                <div class="score-context"><span>Overall fit</span><strong id="score-label">—</strong><p id="result-date">—</p></div>
+              </div>
+              <div class="result-block"><span>Evidence-based reasoning</span><p id="result-reasoning">—</p></div>
+              <div class="result-block"><span>Consistency review</span><p id="result-concern">—</p></div>
+              <button id="view-audit" class="button ghost full-width" type="button">View in audit trail</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="rankings" class="section" aria-labelledby="rankings-title">
+        <div class="section-heading inline-heading">
+          <div><p class="section-kicker">Comparative view</p><h2 id="rankings-title">Vendor rankings</h2></div>
+          <button id="refresh-rankings" class="button ghost compact" type="button">Refresh rankings</button>
+        </div>
+        <div class="panel table-panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Rank</th><th>Vendor</th><th>Score</th><th>Verification</th><th>Evaluation date</th></tr></thead>
+              <tbody id="ranking-body"></tbody>
+            </table>
+          </div>
+          <div id="ranking-empty" class="table-empty">No vendor evaluations yet. Run your first assessment to build the ranking.</div>
+        </div>
+      </section>
+
+      <section id="audit" class="section" aria-labelledby="audit-title">
+        <div class="section-heading inline-heading">
+          <div><p class="section-kicker">Decision history</p><h2 id="audit-title">Audit trail</h2></div>
+          <label class="search-field"><span class="sr-only">Filter audit records</span><input id="audit-search" type="search" placeholder="Filter by vendor name..."></label>
+        </div>
+        <div id="audit-list" class="audit-list"></div>
+        <div id="audit-empty" class="panel section-empty">No audit records found.</div>
+      </section>
+
+      <section id="assistant" class="section" aria-labelledby="assistant-title">
+        <div class="section-heading">
+          <div><p class="section-kicker">Grounded Q&amp;A</p><h2 id="assistant-title">Ask your RFP</h2></div>
+          <p>Paste RFP source text and ask a focused question. Answers are restricted to the supplied context.</p>
+        </div>
+        <div class="assistant-grid">
+          <form id="chat-form" class="panel chat-form">
+            <label for="rfp-text">RFP source text</label>
+            <textarea id="rfp-text" rows="10" required placeholder="Paste the relevant RFP text here..."></textarea>
+            <label for="chat-question">Your question</label>
+            <div class="question-row"><input id="chat-question" type="text" required placeholder="What is the required delivery timeline?"><button id="ask-button" class="button primary" type="submit">Ask <span>→</span></button></div>
+          </form>
+          <div class="panel answer-panel" aria-live="polite">
+            <div class="answer-mark" aria-hidden="true">AI</div>
+            <div><span class="answer-label">ProcureLens answer</span><p id="chat-answer">Your grounded answer will appear here.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <footer><span>ProcureLens · AI-assisted procurement intelligence</span><span>Human review remains essential for final decisions.</span></footer>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

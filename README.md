@@ -22,6 +22,7 @@ reasoning, ranks vendors, and maintains a local audit trail.
 - Ranks validated vendor-score objects from highest to lowest
 - Answers questions using only supplied RFP text
 - Writes SHA-256 proposal and criteria fingerprints to a JSONL audit trail
+- Includes a responsive web dashboard with light and dark themes
 - Provides interactive OpenAPI documentation through FastAPI Swagger UI
 - Treats uploaded document text as untrusted content to reduce prompt-injection risk
 
@@ -121,8 +122,15 @@ AUDIT_LOG_FILE=path/to/audit_log.jsonl
 uvicorn main:app --reload
 ```
 
-Open <http://127.0.0.1:8000>. The root route redirects to the interactive API
-documentation at <http://127.0.0.1:8000/docs>.
+Open <http://127.0.0.1:8000> to use the ProcureLens dashboard. Interactive API
+documentation remains available at <http://127.0.0.1:8000/docs>.
+
+## Web Dashboard
+
+The built-in interface requires no separate frontend server or build step. It
+provides proposal upload, criteria entry, evaluation results, vendor rankings,
+audit filtering, grounded RFP question answering, and a persistent theme
+preference. All requests are sent to the FastAPI backend on the same origin.
 
 ## API Reference
 
@@ -215,6 +223,11 @@ curl "http://127.0.0.1:8000/audit-trail?vendor_name=sample_vendor_proposal.pdf"
 |-- audit.py                       # Consistency checks and JSONL audit records
 |-- ranking.py                     # Vendor validation and ranking
 |-- chatbot.py                     # RFP-grounded question answering
+|-- static/
+|   |-- index.html                 # Dashboard structure and content
+|   |-- styles.css                 # Responsive visual system and themes
+|   |-- app.js                     # API integration and UI state
+|   `-- favicon.svg                # Application icon
 |-- requirements.txt               # Python dependencies
 |-- sample_vendor_proposal.pdf     # Example document for local testing
 `-- .gitignore                     # Local secrets and generated artifacts
@@ -246,7 +259,8 @@ Check installed dependency compatibility:
 pip check
 ```
 
-For interactive endpoint testing, start the application and use `/docs`.
+For end-to-end testing, start the application and use the dashboard at `/`.
+Use `/docs` for direct interactive endpoint testing.
 
 ## Contributing
 

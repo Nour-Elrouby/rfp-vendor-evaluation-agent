@@ -4,7 +4,8 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Form, HTTPException, UploadFile
-from fastapi.responses import RedirectResponse, Response
+from fastapi.responses import FileResponse, Response
+from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
 
 from audit import audit_vendor_score, get_audit_trail
@@ -14,12 +15,19 @@ from ranking import rank_vendors
 from reader import SUPPORTED_EXTENSIONS, extract_vendor_text
 from scoring import score_vendor
 
-app = FastAPI()
+BASE_DIR = Path(__file__).resolve().parent
+
+app = FastAPI(
+    title="ProcureLens API",
+    description="AI-assisted RFP vendor evaluation and audit API.",
+    version="1.0.0",
+)
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 
 @app.get("/", include_in_schema=False)
 async def root():
-    return RedirectResponse(url="/docs")
+    return FileResponse(BASE_DIR / "static" / "index.html")
 
 
 @app.get("/favicon.ico", include_in_schema=False)
