@@ -105,7 +105,6 @@ async def chat_endpoint(question: str = Form(...), rfp_text: str = Form(...)):
     return {"answer": answer}
 
 
-# Retrieve the audit trail for all vendors, or filter it to one vendor.
 @app.get("/audit-trail")
 async def audit_trail_endpoint(vendor_name: str | None = None):
     try:
