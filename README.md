@@ -13,6 +13,26 @@ reasoning, ranks vendors, and maintains a local audit trail.
 > AI-generated evaluations should support, not replace, procurement review and
 > human judgment. Validate scores and cited evidence before making decisions.
 
+## Interface Preview
+
+### Decision dashboard
+
+<p align="center">
+  <img src="docs/images/dashboard-overview.png" alt="ProcureLens vendor intelligence dashboard overview" width="100%">
+</p>
+
+### Evaluation workspace
+
+<p align="center">
+  <img src="docs/images/dashboard-workspace.png" alt="ProcureLens proposal evaluation workspace" width="100%">
+</p>
+
+### Responsive mobile experience
+
+<p align="center">
+  <img src="docs/images/dashboard-mobile.png" alt="ProcureLens responsive mobile dashboard" width="360">
+</p>
+
 ## Features
 
 - Extracts proposal text from PDF, DOCX, and XLSX files
@@ -223,6 +243,7 @@ curl "http://127.0.0.1:8000/audit-trail?vendor_name=sample_vendor_proposal.pdf"
 |-- audit.py                       # Consistency checks and JSONL audit records
 |-- ranking.py                     # Vendor validation and ranking
 |-- chatbot.py                     # RFP-grounded question answering
+|-- docs/images/                   # Dashboard screenshots for documentation
 |-- static/
 |   |-- index.html                 # Dashboard structure and content
 |   |-- styles.css                 # Responsive visual system and themes
