@@ -220,17 +220,6 @@ curl "http://127.0.0.1:8000/audit-trail?vendor_name=sample_vendor_proposal.pdf"
 `-- .gitignore                     # Local secrets and generated artifacts
 ```
 
-## Error Handling
-
-The API uses standard HTTP status codes:
-
-| Status | Meaning |
-| --- | --- |
-| `400` | Invalid input, unsupported file, or malformed vendor data |
-| `422` | Missing or incorrectly formatted request fields |
-| `502` | Groq connection, timeout, API, or generated-output failure |
-| `500` | Corrupt or unreadable audit-log data |
-
 ## Security and Privacy
 
 - Never commit `.env` or place API keys in source code.
