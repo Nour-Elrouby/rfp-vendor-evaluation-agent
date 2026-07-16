@@ -53,7 +53,7 @@ def _check_consistency(
     passages = split_text(vendor_text)
     matches = semantic_matches(criteria, passages, top_k=1)
     expected_score = round(
-        sum(similarity_to_score(result[0]["relevance"]) for result in matches)
+        sum(similarity_to_score(result[0]["similarity"]) for result in matches)
         / len(matches)
     )
     difference = abs(expected_score - score)
@@ -116,13 +116,8 @@ def _append_to_log(record: dict[str, Any]) -> None:
             os.fsync(file.fileno())
 
 
-def get_audit_trail(
-    vendor_name: str | None = None,
-    *,
-    offset: int = 0,
-    limit: int = 100,
-) -> list[dict[str, Any]]:
-    """Return a bounded, newest-first page of audit records."""
+def get_audit_trail(vendor_name: str | None = None) -> list[dict[str, Any]]:
+    """Returns all audit records, optionally filtered by exact vendor name."""
     if vendor_name is not None:
         vendor_name = _validate_required_text(vendor_name, "vendor_name")
 
@@ -151,5 +146,4 @@ def get_audit_trail(
                 if vendor_name is None or record.get("vendor_name") == vendor_name:
                     records.append(record)
 
-    records.reverse()
-    return records[offset : offset + limit]
+    return records

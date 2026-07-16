@@ -69,29 +69,14 @@ function consistencyMeta(value) {
   return { label: "Check unavailable", className: "warning" };
 }
 
-async function apiRequest(url, options = {}, mayPromptForKey = true) {
-  const headers = new Headers(options.headers || {});
-  const savedKey = sessionStorage.getItem("procurelens-api-key");
-  if (savedKey) headers.set("X-API-Key", savedKey);
-
-  const response = await fetch(url, { ...options, headers });
-  if (response.status === 401 && mayPromptForKey) {
-    const enteredKey = window.prompt("Enter the ProcureLens API access key:");
-    if (enteredKey?.trim()) {
-      sessionStorage.setItem("procurelens-api-key", enteredKey.trim());
-      return apiRequest(url, options, false);
-    }
-  }
-
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, options);
   const contentType = response.headers.get("content-type") || "";
   const payload = contentType.includes("application/json")
     ? await response.json()
     : await response.text();
 
   if (!response.ok) {
-    if (response.status === 401) {
-      sessionStorage.removeItem("procurelens-api-key");
-    }
     const detail = typeof payload === "object" && payload?.detail
       ? payload.detail
       : typeof payload === "string" && payload
@@ -312,7 +297,7 @@ async function submitQuestion(event) {
   const answer = $("#chat-answer");
   button.disabled = true;
   button.textContent = "Thinking...";
-  answer.textContent = "Finding evidence and preparing a grounded answer...";
+  answer.textContent = "Finding the closest semantic evidence...";
 
   const formData = new FormData();
   formData.append("rfp_text", rfpText);
@@ -322,7 +307,7 @@ async function submitQuestion(event) {
     const payload = await apiRequest("/chat", { method: "POST", body: formData });
     answer.textContent = payload.answer;
   } catch (error) {
-    answer.textContent = "A grounded answer could not be generated.";
+    answer.textContent = "Relevant evidence could not be retrieved.";
     showToast(error.message || "RFP question failed.", "error");
   } finally {
     button.disabled = false;
