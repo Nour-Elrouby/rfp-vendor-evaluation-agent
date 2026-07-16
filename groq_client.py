@@ -35,7 +35,6 @@ def generate_json(prompt: str, model: str | None = None) -> dict[str, Any]:
             model=selected_model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
-            max_completion_tokens=512,
             temperature=0,
         )
     except APITimeoutError as exc:

@@ -1,5 +1,3 @@
-import html
-import re
 from pathlib import Path
 
 import openpyxl
@@ -8,13 +6,6 @@ from docx import Document
 
 SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".xlsx"}
 
-
-def validate_file_signature(contents: bytes, extension: str) -> None:
-    """Reject obvious extension/content mismatches before invoking parsers."""
-    if extension == ".pdf" and not contents.startswith(b"%PDF-"):
-        raise ValueError("The uploaded file is not a valid PDF.")
-    if extension in {".docx", ".xlsx"} and not contents.startswith(b"PK"):
-        raise ValueError(f"The uploaded file is not a valid {extension[1:].upper()} file.")
 
 def read_pdf(file_path: str | Path) -> str:
     pages: list[str] = []
@@ -53,8 +44,7 @@ def extract_vendor_text(file_path: str | Path) -> str:
         supported = ", ".join(sorted(SUPPORTED_EXTENSIONS))
         raise ValueError(f"Unsupported file type '{extension or '<none>'}'. Use: {supported}.")
 
-    text = html.unescape(readers[extension](path))
-    text = re.sub(r"\(cid:\d+\)", " ", text)
+    text = readers[extension](path)
     if not text.strip():
         raise ValueError("The uploaded proposal contains no extractable text.")
     return text.strip()

@@ -69,29 +69,14 @@ function consistencyMeta(value) {
   return { label: "Check unavailable", className: "warning" };
 }
 
-async function apiRequest(url, options = {}, mayPromptForKey = true) {
-  const headers = new Headers(options.headers || {});
-  const savedKey = sessionStorage.getItem("procurelens-api-key");
-  if (savedKey) headers.set("X-API-Key", savedKey);
-
-  const response = await fetch(url, { ...options, headers });
-  if (response.status === 401 && mayPromptForKey) {
-    const enteredKey = window.prompt("Enter the ProcureLens API access key:");
-    if (enteredKey?.trim()) {
-      sessionStorage.setItem("procurelens-api-key", enteredKey.trim());
-      return apiRequest(url, options, false);
-    }
-  }
-
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, options);
   const contentType = response.headers.get("content-type") || "";
   const payload = contentType.includes("application/json")
     ? await response.json()
     : await response.text();
 
   if (!response.ok) {
-    if (response.status === 401) {
-      sessionStorage.removeItem("procurelens-api-key");
-    }
     const detail = typeof payload === "object" && payload?.detail
       ? payload.detail
       : typeof payload === "string" && payload
@@ -149,7 +134,7 @@ function setEvaluationState(mode) {
   const messages = [
     "Extracting document evidence...",
     "Comparing evidence with RFP criteria...",
-    "Recomputing semantic consistency...",
+    "Running independent consistency review...",
   ];
   let step = 0;
   $("#loading-message").textContent = messages[step];
@@ -169,7 +154,7 @@ function renderResult(record) {
   $("#result-date").textContent = `Evaluated ${formatDate(record.timestamp, true)}`;
   $("#result-reasoning").textContent = record.reasoning;
   $("#result-concern").textContent = record.consistent === true
-    ? "The stored score matches the independently recomputed semantic score."
+    ? "The independent review found the reasoning supported by proposal evidence."
     : record.concern || record.consistency_error || "The consistency review did not complete.";
 
   const status = $("#result-status");
@@ -312,7 +297,7 @@ async function submitQuestion(event) {
   const answer = $("#chat-answer");
   button.disabled = true;
   button.textContent = "Thinking...";
-  answer.textContent = "Finding evidence and preparing a grounded answer...";
+  answer.textContent = "Reviewing the supplied RFP context...";
 
   const formData = new FormData();
   formData.append("rfp_text", rfpText);
@@ -322,7 +307,7 @@ async function submitQuestion(event) {
     const payload = await apiRequest("/chat", { method: "POST", body: formData });
     answer.textContent = payload.answer;
   } catch (error) {
-    answer.textContent = "A grounded answer could not be generated.";
+    answer.textContent = "The answer could not be generated.";
     showToast(error.message || "RFP question failed.", "error");
   } finally {
     button.disabled = false;
