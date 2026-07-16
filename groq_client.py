@@ -42,12 +42,15 @@ def generate_json(prompt: str, model: str | None = None) -> dict[str, Any]:
     except APIConnectionError as exc:
         raise GroqError("Could not connect to the Groq API.") from exc
     except APIStatusError as exc:
-        detail = str(exc)
-        if len(detail) > 300:
-            detail = detail[:300] + "..."
-        raise GroqError(f"Groq returned HTTP status {exc.status_code}: {detail}") from exc
+        if exc.status_code == 429:
+            message = "Groq rate limit reached. Try again later."
+        elif exc.status_code in {401, 403}:
+            message = "Groq authentication failed. Check the configured API key."
+        else:
+            message = f"Groq request failed with HTTP status {exc.status_code}."
+        raise GroqError(message) from exc
     except Exception as exc:
-        raise GroqError(f"Groq request failed: {exc}") from exc
+        raise GroqError("An unexpected Groq client error occurred.") from exc
 
     if not completion.choices:
         raise GroqError("Groq returned no response choices.")
