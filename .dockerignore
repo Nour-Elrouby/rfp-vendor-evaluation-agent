@@ -1,0 +1,14 @@
+.git
+.github
+.env
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.log
+audit_log.jsonl
+.pytest_cache
+.ruff_cache
+docs/images
+sample_vendor_proposal.pdf

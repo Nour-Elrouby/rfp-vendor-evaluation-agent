@@ -26,7 +26,8 @@ def score_vendor(vendor_text: str, rfp_criteria: str) -> dict[str, Any]:
                 "criterion": criterion,
                 "evidence": best["text"],
                 "similarity": round(best["similarity"], 4),
-                "score": similarity_to_score(best["similarity"]),
+                "relevance": round(best["relevance"], 4),
+                "score": similarity_to_score(best["relevance"]),
             }
         )
 
