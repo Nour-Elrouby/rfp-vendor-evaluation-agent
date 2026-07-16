@@ -142,9 +142,10 @@ documentation remains available at <http://127.0.0.1:8000/docs>.
 ## Web Dashboard
 
 The built-in interface requires no separate frontend server or build step. It
-provides proposal upload, criteria entry, evaluation results, vendor rankings,
-audit filtering, grounded RFP question answering, and a persistent theme
-preference. All requests are sent to the FastAPI backend on the same origin.
+provides streamlined sidebar navigation, proposal upload, criteria entry,
+evaluation results, vendor rankings, audit filtering, grounded RFP question
+answering, and a persistent theme preference. All requests are sent to the
+FastAPI backend on the same origin.
 
 ## API Reference
 
