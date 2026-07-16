@@ -10,7 +10,7 @@ from starlette.concurrency import run_in_threadpool
 
 from audit import audit_vendor_score, get_audit_trail
 from chatbot import answer_question
-from groq_client import GroqError
+from embedding_client import EmbeddingError
 from ranking import rank_vendors
 from reader import SUPPORTED_EXTENSIONS, extract_vendor_text
 from scoring import score_vendor
@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(
     title="ProcureLens API",
-    description="AI-assisted RFP vendor evaluation and audit API.",
+    description="Embedding-based RFP vendor evaluation and audit API.",
     version="1.0.0",
 )
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
@@ -80,8 +80,8 @@ async def score_vendor_endpoint(file: UploadFile, rfp_criteria: str = Form(...))
                 rfp_criteria,
                 score_result,
             )
-        except GroqError as exc:
-            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        except EmbeddingError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
         except (TypeError, ValueError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
     finally:
@@ -108,8 +108,8 @@ async def chat_endpoint(question: str = Form(...), rfp_text: str = Form(...)):
         answer = await run_in_threadpool(answer_question, question, rfp_text)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    except GroqError as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except EmbeddingError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     return {"answer": answer}
 
 

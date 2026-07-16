@@ -2,16 +2,16 @@
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Groq](https://img.shields.io/badge/Groq-LLM-F55036)](https://groq.com/)
+[![Sentence Transformers](https://img.shields.io/badge/Sentence--Transformers-Embeddings-5B4BDB)](https://www.sbert.net/)
 
 An API for evaluating vendor proposals against RFP requirements. It extracts
-content from common business-document formats, uses a Groq-hosted language
-model to produce evidence-based scores, independently checks the generated
-reasoning, ranks vendors, and maintains a local audit trail.
+content from common business-document formats, creates local sentence
+embeddings, scores criterion-to-evidence cosine similarity, ranks vendors, and
+maintains a reproducible local audit trail.
 
 > [!IMPORTANT]
-> AI-generated evaluations should support, not replace, procurement review and
-> human judgment. Validate scores and cited evidence before making decisions.
+> Similarity scores support, but do not replace, procurement review and human
+> judgment. Validate matched evidence before making decisions.
 
 ## Interface Preview
 
@@ -31,10 +31,11 @@ reasoning, ranks vendors, and maintains a local audit trail.
 
 - Extracts proposal text from PDF, DOCX, and XLSX files
 - Scores proposals from 0 to 100 against user-provided RFP criteria
-- Instructs the model to rely on proposal evidence and apply numeric limits literally
-- Performs a second model pass to check whether scoring reasoning is supported
+- Matches every criterion to the closest proposal evidence using dense embeddings
+- Uses normalized cosine similarity and deterministic score calibration
+- Recomputes semantic fit independently for audit consistency
 - Ranks validated vendor-score objects from highest to lowest
-- Answers questions using only supplied RFP text
+- Retrieves the most relevant supplied RFP passages for natural-language questions
 - Writes SHA-256 proposal and criteria fingerprints to a JSONL audit trail
 - Includes a responsive web dashboard with light and dark themes
 - Provides interactive OpenAPI documentation through FastAPI Swagger UI
@@ -49,10 +50,13 @@ Vendor document
 Text extraction (PDF/DOCX/XLSX)
       |
       v
-Groq evaluation against RFP criteria
+Local sentence embeddings
       |
       v
-Independent consistency check
+Criterion-to-evidence cosine similarity
+      |
+      v
+Deterministic consistency recomputation
       |
       v
 JSONL audit record + API response
@@ -60,7 +64,7 @@ JSONL audit record + API response
 
 The uploaded file is written to a temporary location for extraction and then
 deleted. The full extracted proposal is not stored in the audit log; a SHA-256
-fingerprint is stored instead. The RFP criteria, score, model-generated
+fingerprint is stored instead. The RFP criteria, score, matched-evidence
 reasoning, and consistency result are retained. Because reasoning can summarize
 proposal evidence, review the audit log's storage location and access controls.
 
@@ -69,7 +73,8 @@ proposal evidence, review the audit log's storage location and access controls.
 | Component | Purpose |
 | --- | --- |
 | FastAPI | HTTP API and interactive documentation |
-| Groq SDK | Hosted LLM inference and JSON responses |
+| Sentence Transformers | Local dense embeddings and semantic similarity |
+| all-MiniLM-L6-v2 | Default 384-dimensional sentence embedding model |
 | pdfplumber | PDF text extraction |
 | python-docx | Word document extraction |
 | openpyxl | Excel workbook extraction |
@@ -78,8 +83,8 @@ proposal evidence, review the audit log's storage location and access controls.
 ## Requirements
 
 - Python 3.10 or newer
-- A Groq API key
-- Internet access for Groq API requests
+- Internet access for the one-time default model download
+- Approximately 100 MB of model storage plus PyTorch dependencies
 
 ## Quick Start
 
@@ -112,17 +117,19 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Configure Groq
+### 4. Optional embedding configuration
 
-Create a file named `.env` in the project root:
+No API key is required. The default model is downloaded on first use and then
+loaded from the local Hugging Face cache. To override the defaults, create a
+file named `.env` in the project root:
 
 ```dotenv
-GROQ_API_KEY=your-groq-api-key
-GROQ_MODEL=llama-3.3-70b-versatile
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+MIN_SIMILARITY=0.24
 ```
 
-`GROQ_MODEL` is optional; the value above is the application default. The
-`.env` file is ignored by Git and must never be committed.
+Both values are optional. `MIN_SIMILARITY` controls the evidence threshold used
+by RFP question retrieval. The `.env` file is ignored by Git.
 
 To store the audit log elsewhere, add an optional absolute or relative path:
 
@@ -187,9 +194,10 @@ Example response:
 }
 ```
 
-Scores and wording vary by model output. A completed score can still be
-returned when the independent consistency check fails; in that case,
-`consistent` is `null` and `consistency_error` explains the failure.
+Scores are deterministic for the same model, inputs, and configuration. Each
+response also includes `criteria_results` with the matched evidence, raw cosine
+similarity, and calibrated score for every requirement. If consistency
+recomputation fails, `consistent` is `null` and `consistency_error` explains why.
 
 ### Rank vendors
 
@@ -210,8 +218,8 @@ curl -X POST "http://127.0.0.1:8000/chat" \
   -F "rfp_text=The selected vendor must complete implementation within 16 weeks."
 ```
 
-The endpoint answers only from the provided `rfp_text` and states when an
-answer is unavailable.
+The endpoint returns the passages with the strongest semantic similarity to the
+question. It states when no passage clears the configured relevance threshold.
 
 ### Retrieve the audit trail
 
@@ -232,12 +240,12 @@ curl "http://127.0.0.1:8000/audit-trail?vendor_name=sample_vendor_proposal.pdf"
 ```text
 .
 |-- main.py                        # FastAPI routes and request handling
-|-- groq_client.py                 # Groq client, JSON parsing, and API errors
+|-- embedding_client.py            # Local model loading, chunking, and similarity
 |-- reader.py                      # PDF, DOCX, and XLSX text extraction
-|-- scoring.py                     # Evidence-based vendor scoring
+|-- scoring.py                     # Criterion-to-evidence semantic scoring
 |-- audit.py                       # Consistency checks and JSONL audit records
 |-- ranking.py                     # Vendor validation and ranking
-|-- chatbot.py                     # RFP-grounded question answering
+|-- chatbot.py                     # RFP semantic evidence retrieval
 |-- docs/images/                   # Dashboard screenshots for documentation
 |-- static/
 |   |-- index.html                 # Dashboard structure and content
@@ -251,11 +259,9 @@ curl "http://127.0.0.1:8000/audit-trail?vendor_name=sample_vendor_proposal.pdf"
 
 ## Security and Privacy
 
-- Never commit `.env` or place API keys in source code.
-- Rotate any credential that has been pasted into chat, logs, commits, or issues.
-- Uploaded proposal and RFP content is sent to Groq for processing.
-- Review your organization's data-handling requirements before submitting
-  confidential procurement material to an external model provider.
+- Proposal and RFP content is embedded locally after the model is downloaded.
+- No API key is required and document text is not sent to an inference API.
+- The model repository is contacted only when model files are not already cached.
 - The API currently has no authentication, authorization, rate limiting, or
   upload-size limit. Add these controls before exposing it to untrusted users.
 - The default audit log is a local JSONL file intended for a single application

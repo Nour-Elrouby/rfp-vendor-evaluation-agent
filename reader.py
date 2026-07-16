@@ -1,3 +1,5 @@
+import html
+import re
 from pathlib import Path
 
 import openpyxl
@@ -44,7 +46,8 @@ def extract_vendor_text(file_path: str | Path) -> str:
         supported = ", ".join(sorted(SUPPORTED_EXTENSIONS))
         raise ValueError(f"Unsupported file type '{extension or '<none>'}'. Use: {supported}.")
 
-    text = readers[extension](path)
+    text = html.unescape(readers[extension](path))
+    text = re.sub(r"\(cid:\d+\)", " ", text)
     if not text.strip():
         raise ValueError("The uploaded proposal contains no extractable text.")
     return text.strip()

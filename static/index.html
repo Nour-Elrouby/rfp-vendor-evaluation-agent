@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="ProcureLens AI-assisted RFP vendor evaluation dashboard">
+  <meta name="description" content="ProcureLens semantic RFP vendor evaluation dashboard">
   <title>ProcureLens | Vendor Intelligence</title>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
   <link rel="stylesheet" href="/static/styles.css">
@@ -39,7 +39,7 @@
       <div class="sidebar-footer">
         <div class="service-status">
           <span class="status-dot" aria-hidden="true"></span>
-          <span><strong>Groq powered</strong><small>Secure server connection</small></span>
+          <span><strong>Local embeddings</strong><small>Semantic similarity engine</small></span>
         </div>
         <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">API documentation <span>↗</span></a>
       </div>
@@ -147,7 +147,7 @@
               <div class="process-list">
                 <span><i>1</i> Extract proposal evidence</span>
                 <span><i>2</i> Score against requirements</span>
-                <span><i>3</i> Verify generated reasoning</span>
+                <span><i>3</i> Recompute semantic consistency</span>
               </div>
             </div>
 
@@ -213,13 +213,13 @@
             <div class="question-row"><input id="chat-question" type="text" required placeholder="What is the required delivery timeline?"><button id="ask-button" class="button primary" type="submit">Ask <span>→</span></button></div>
           </form>
           <div class="panel answer-panel" aria-live="polite">
-            <div class="answer-mark" aria-hidden="true">AI</div>
-            <div><span class="answer-label">ProcureLens answer</span><p id="chat-answer">Your grounded answer will appear here.</p></div>
+            <div class="answer-mark" aria-hidden="true">SIM</div>
+            <div><span class="answer-label">Relevant RFP evidence</span><p id="chat-answer">The closest semantic evidence will appear here.</p></div>
           </div>
         </div>
       </section>
 
-      <footer><span>ProcureLens · AI-assisted procurement intelligence</span><span>Human review remains essential for final decisions.</span></footer>
+      <footer><span>ProcureLens · Semantic procurement intelligence</span><span>Human review remains essential for final decisions.</span></footer>
     </main>
   </div>
 

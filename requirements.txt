@@ -1,7 +1,8 @@
 fastapi
 uvicorn
 python-multipart
-groq
+sentence-transformers>=3.0,<6
+numpy
 python-dotenv
 pdfplumber
 python-docx

@@ -134,7 +134,7 @@ function setEvaluationState(mode) {
   const messages = [
     "Extracting document evidence...",
     "Comparing evidence with RFP criteria...",
-    "Running independent consistency review...",
+    "Recomputing semantic consistency...",
   ];
   let step = 0;
   $("#loading-message").textContent = messages[step];
@@ -154,7 +154,7 @@ function renderResult(record) {
   $("#result-date").textContent = `Evaluated ${formatDate(record.timestamp, true)}`;
   $("#result-reasoning").textContent = record.reasoning;
   $("#result-concern").textContent = record.consistent === true
-    ? "The independent review found the reasoning supported by proposal evidence."
+    ? "The stored score matches the independently recomputed semantic score."
     : record.concern || record.consistency_error || "The consistency review did not complete.";
 
   const status = $("#result-status");
@@ -297,7 +297,7 @@ async function submitQuestion(event) {
   const answer = $("#chat-answer");
   button.disabled = true;
   button.textContent = "Thinking...";
-  answer.textContent = "Reviewing the supplied RFP context...";
+  answer.textContent = "Finding the closest semantic evidence...";
 
   const formData = new FormData();
   formData.append("rfp_text", rfpText);
@@ -307,7 +307,7 @@ async function submitQuestion(event) {
     const payload = await apiRequest("/chat", { method: "POST", body: formData });
     answer.textContent = payload.answer;
   } catch (error) {
-    answer.textContent = "The answer could not be generated.";
+    answer.textContent = "Relevant evidence could not be retrieved.";
     showToast(error.message || "RFP question failed.", "error");
   } finally {
     button.disabled = false;
