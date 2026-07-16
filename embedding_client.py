@@ -154,7 +154,7 @@ def _content_terms(text: str) -> set[str]:
 
 
 def similarity_to_score(similarity: float) -> int:
-    """Calibrate sentence cosine similarity into a readable 0-100 fit score."""
+    """Calibrate hybrid semantic relevance into a readable 0-100 evidence score."""
     # MiniLM semantic-search matches commonly occupy a narrower range than
     # 0-1. Treat 0.10 as no meaningful fit and 0.50 as a strong fit.
     calibrated = (float(similarity) - 0.10) / 0.40
