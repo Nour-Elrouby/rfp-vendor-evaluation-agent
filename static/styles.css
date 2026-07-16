@@ -150,9 +150,8 @@ button { color: inherit; }
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 12px;
   min-height: 46px;
-  padding: 0 13px;
+  padding: 0 18px;
   border: 1px solid transparent;
   border-radius: 12px;
   color: rgba(237, 248, 244, 0.64);
@@ -163,8 +162,6 @@ button { color: inherit; }
 
 .nav-link:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
 .nav-link.active { color: #fff; border-color: rgba(142, 227, 197, 0.12); background: rgba(142, 227, 197, 0.12); }
-.nav-icon { display: grid; place-items: center; width: 24px; height: 24px; color: var(--accent); font-size: 9px; font-weight: 800; letter-spacing: 0.05em; }
-
 .sidebar-footer { position: relative; z-index: 1; margin-top: auto; padding-top: 36px; }
 .service-status { display: flex; align-items: center; gap: 10px; padding: 13px; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 13px; background: rgba(255, 255, 255, 0.035); }
 .service-status strong, .service-status small { display: block; }
@@ -364,7 +361,6 @@ footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 9
   .brand small { display: none; }
   .nav-list { display: flex; gap: 5px; padding-bottom: 3px; overflow-x: auto; }
   .nav-link { min-width: max-content; min-height: 34px; padding: 0 10px; font-size: 10px; }
-  .nav-icon { display: none; }
   .main-content { width: 100%; margin: 0; padding: 0 20px; }
   .topbar { min-height: 78px; }
   .privacy-pill { display: none; }
