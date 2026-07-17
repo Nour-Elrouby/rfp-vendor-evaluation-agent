@@ -69,7 +69,7 @@ proposal evidence, review the audit log's storage location and access controls.
 | Component | Purpose |
 | --- | --- |
 | FastAPI | HTTP API and interactive documentation |
-| Groq SDK | Hosted LLM inference and JSON responses |
+| Groq SDK | Hosted inference, structured JSON responses, and safe API errors |
 | pdfplumber | PDF text extraction |
 | python-docx | Word document extraction |
 | openpyxl | Excel workbook extraction |
@@ -80,64 +80,6 @@ proposal evidence, review the audit log's storage location and access controls.
 - Python 3.10 or newer
 - A Groq API key
 - Internet access for Groq API requests
-
-## Quick Start
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/Nour-Elrouby/rfp-vendor-evaluation-agent.git
-cd rfp-vendor-evaluation-agent
-```
-
-### 2. Create a virtual environment
-
-Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-macOS or Linux:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 3. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configure Groq
-
-Create a file named `.env` in the project root:
-
-```dotenv
-GROQ_API_KEY=your-groq-api-key
-GROQ_MODEL=llama-3.3-70b-versatile
-```
-
-`GROQ_MODEL` is optional; the value above is the application default. The
-`.env` file is ignored by Git and must never be committed.
-
-To store the audit log elsewhere, add an optional absolute or relative path:
-
-```dotenv
-AUDIT_LOG_FILE=path/to/audit_log.jsonl
-```
-
-### 5. Start the API
-
-```bash
-uvicorn main:app --reload
-```
-
-Open <http://127.0.0.1:8000> to use the ProcureLens dashboard. Interactive API
-documentation remains available at <http://127.0.0.1:8000/docs>.
 
 ## Web Dashboard
 
@@ -237,7 +179,7 @@ curl "http://127.0.0.1:8000/audit-trail?vendor_name=sample_vendor_proposal.pdf"
 |-- scoring.py                     # Evidence-based vendor scoring
 |-- audit.py                       # Consistency checks and JSONL audit records
 |-- ranking.py                     # Vendor validation and ranking
-|-- chatbot.py                     # RFP-grounded question answering
+|-- chatbot.py                     # Grounded answers and JSON-shape normalization
 |-- docs/images/                   # Dashboard screenshots for documentation
 |-- static/
 |   |-- index.html                 # Dashboard structure and content
